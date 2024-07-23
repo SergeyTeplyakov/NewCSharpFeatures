@@ -1,5 +1,5 @@
 ﻿/*
- The most important (*) C# features every 1ES developer should know.
+ The Most Important (*) C# Features Every Developer Should Know.
 
 by Sergey Tepliakov
 Principal Software Engineer
@@ -7,8 +7,9 @@ Principal Software Engineer
 ---------------------- 
 (*) Personal opinion!
 
-
 Agenda
+
+* Can I use the latest C# language features targeting old frameworks?
 
 * My favorite C# 10 features
 * Null checking
