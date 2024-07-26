@@ -1,19 +1,21 @@
-﻿using FluentAssertions;
+using FluentAssertions;
+using Microsoft.VisualBasic.CompilerServices;
 using Xunit;
+using Xunit.Abstractions;
 
-namespace NewCSharpFeatures._02___CSharp_11;
+namespace NewCSharpFeatures._02___CSharp_11._02_Improving_Expressiveness;
 
 /// <summary>
 /// Null checking is quite simple but over time, the C# language acquired
 /// quite a lot of features that allow checking for objects for null.
 /// </summary>
-public class NullCheckingSamples
+public class NullCheckingSamples(ITestOutputHelper output)
 {
     [Fact]
     public void NullChecks()
     {
         // An "old" canonical way for null checking.
-        // Not necessarily the best one, because the operator== may
+        // Not necessarily the best one, because the operator == may
         // be overloaded with a different behavior.
         object? o = null;
         bool isNull = o == null;
@@ -36,6 +38,26 @@ public class NullCheckingSamples
         // Not the best way, for sure!
         isNull = o == default;
         isNull.Should().BeTrue();
+    }
+
+    [Fact]
+    public void Please_Dont()
+    {
+        DontDoThisEver? left = new();
+
+        output.WriteLine($"left == null: {left == null}");
+        output.WriteLine($"left != null: {left != null}");
+        left = null;
+        output.WriteLine($"left == null: {left == null}");
+        output.WriteLine($"left != null: {left != null}");
+
+        left = new();
+        output.WriteLine($"left is null: {left is null}");
+        output.WriteLine($"left is not null: {left is not null}");
+        
+        left = null;
+        output.WriteLine($"left is null: {left is null}");
+        output.WriteLine($"left is not null: {left is not null}");
     }
 
     [Fact]
@@ -69,37 +91,14 @@ public class NullCheckingSamples
 
         isNotNull = o is { } y;
         isNotNull.Should().BeFalse();
-        
+
         // Can be useful for:
         // if (a.b.c.d is {} d) { ... }
     }
 
-    // Generate equality members
-    public class FooBar : IEquatable<FooBar>
+    public class DontDoThisEver
     {
-        public bool Equals(FooBar? other)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool Equals(object? obj)
-        {
-            if (obj is null) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((FooBar) obj);
-        }
-
-        public override int GetHashCode()
-        {
-            throw new NotImplementedException();
-        }
+        public static bool operator ==(DontDoThisEver? lhs, DontDoThisEver? rhs) => true; // Everything is null!
+        public static bool operator !=(DontDoThisEver? lhs, DontDoThisEver? rhs) => true; // and not null at the same time!
     }
-
-    // What to use and when?
-    /*
-     * In equality implementation: 'left is null'.
-     * For other cases: Assert(arg != null); or Assert(arg is not null);
-     * Consider helpers: arg.ThrowIfNull();
-     */
 }
